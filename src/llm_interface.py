@@ -3,6 +3,8 @@ Module for interfacing with OpenAI LLMs to generate data visualization code.
 """
 
 import os
+import tempfile
+import time
 from typing import Optional
 
 import matplotlib.pyplot as plt
@@ -98,3 +100,63 @@ Please generate matplotlib code to create this visualization."""
             exec(code, exec_globals)
         except Exception as e:
             raise Exception(f"Failed to execute visualization code: {str(e)}")
+
+    def transcribe_audio_file(self, audio_file_path: str) -> str:
+        """Transcribe audio file using OpenAI speech-to-text API."""
+        try:
+            with open(audio_file_path, "rb") as audio_file:
+                transcript = self.client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio_file,
+                    response_format="text"
+                )
+            return transcript.strip()
+        except Exception as e:
+            raise Exception(f"Failed to transcribe audio: {str(e)}")
+
+    def record_and_transcribe_voice(self, duration: int = 5) -> str:
+        """Record voice input and transcribe it using OpenAI speech-to-text API.
+        
+        Args:
+            duration: Recording duration in seconds (default: 5)
+            
+        Returns:
+            Transcribed text from the audio
+        """
+        try:
+            # Try to import audio libraries
+            import sounddevice as sd
+            import scipy.io.wavfile
+        except ImportError as e:
+            raise Exception(
+                f"Audio libraries not available: {str(e)}. "
+                "Please use 'voice_file <path>' command to transcribe an audio file instead."
+            )
+        
+        # Record audio to temporary file
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
+            try:
+                sample_rate = 44100  # Standard sample rate
+                print(f"Recording for {duration} seconds... Speak now!")
+                
+                # Record audio
+                audio_data = sd.rec(int(duration * sample_rate), 
+                                  samplerate=sample_rate, 
+                                  channels=1, 
+                                  dtype='int16')
+                sd.wait()  # Wait for recording to complete
+                print("Recording complete!")
+                
+                # Save to temporary file
+                scipy.io.wavfile.write(temp_audio.name, sample_rate, audio_data)
+                
+                # Transcribe the audio file
+                transcription = self.transcribe_audio_file(temp_audio.name)
+                return transcription
+                
+            finally:
+                # Clean up temporary file
+                try:
+                    os.unlink(temp_audio.name)
+                except OSError:
+                    pass  # Ignore errors if file doesn't exist

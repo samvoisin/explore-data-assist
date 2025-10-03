@@ -82,6 +82,8 @@ class DataVisualizationAssistant:
         print("  load <file_path> - Load a dataset")
         print("  info - Show dataset information") 
         print("  viz <request> - Create a visualization")
+        print("  voice [duration] - Record voice input for visualization (default: 5 seconds)")
+        print("  voice_file <audio_file_path> - Transcribe audio file for visualization")
         print("  quit - Exit the assistant")
         print()
         
@@ -111,6 +113,46 @@ class DataVisualizationAssistant:
                     try:
                         self.create_visualization(request)
                         print("Visualization created successfully!")
+                    except Exception as e:
+                        print(f"Error: {e}")
+                
+                elif user_input.startswith('voice_file '):
+                    audio_file_path = user_input[11:].strip()
+                    try:
+                        print("Transcribing audio file...")
+                        transcription = self.llm.transcribe_audio_file(audio_file_path)
+                        print(f"Transcription: '{transcription}'")
+                        
+                        if transcription.strip():
+                            self.create_visualization(transcription)
+                            print("Visualization created successfully from voice input!")
+                        else:
+                            print("No speech detected in the audio file.")
+                    except Exception as e:
+                        print(f"Error: {e}")
+                
+                elif user_input.startswith('voice'):
+                    # Parse optional duration parameter
+                    parts = user_input.split()
+                    duration = 5  # default duration
+                    if len(parts) > 1:
+                        try:
+                            duration = int(parts[1])
+                            if duration <= 0 or duration > 30:
+                                print("Duration must be between 1 and 30 seconds")
+                                continue
+                        except ValueError:
+                            print("Invalid duration. Using default 5 seconds.")
+                    
+                    try:
+                        transcription = self.llm.record_and_transcribe_voice(duration)
+                        print(f"Transcription: '{transcription}'")
+                        
+                        if transcription.strip():
+                            self.create_visualization(transcription)
+                            print("Visualization created successfully from voice input!")
+                        else:
+                            print("No speech detected. Please try again.")
                     except Exception as e:
                         print(f"Error: {e}")
                 
