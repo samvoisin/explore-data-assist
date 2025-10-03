@@ -128,9 +128,6 @@ explore-data-assist/
 
 - **Whisper Integration**: Voice input using OpenAI's Whisper model
 - **Web Interface**: Browser-based UI for better user experience
-- **Data Export**: Save generated visualizations and code
-- **Advanced Analytics**: Statistical analysis and insights generation
-- **Multiple Dataset Support**: Compare and analyze multiple datasets
 
 ## Contributing
 
