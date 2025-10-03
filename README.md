@@ -93,7 +93,12 @@ Try these natural language requests with the sample data:
 
 Run the test suite to verify installation:
 ```bash
-python test_assistant.py
+pytest tests/
+```
+
+Or run tests with verbose output:
+```bash
+pytest tests/ -v
 ```
 
 ## Project Structure
@@ -105,11 +110,16 @@ explore-data-assist/
 │   ├── data_analyzer.py    # Dataset metadata extraction
 │   ├── llm_interface.py    # OpenAI LLM integration
 │   └── assistant.py        # Main assistant coordination
+├── tests/                  # Test suite using pytest
+│   ├── __init__.py
+│   ├── conftest.py         # Pytest configuration and fixtures
+│   ├── test_data_analyzer.py    # Tests for DataAnalyzer
+│   ├── test_assistant.py        # Tests for DataVisualizationAssistant
+│   └── test_llm_interface.py    # Tests for LLMInterface
 ├── sample_data/
 │   └── sales_data.csv      # Sample dataset for testing
 ├── main.py                 # Main entry point
-├── test_assistant.py       # Test suite
-├── requirements.txt        # Python dependencies
+├── requirements.txt        # Python dependencies (includes pytest)
 ├── .env.example           # Environment variable template
 └── README.md              # This file
 ```
