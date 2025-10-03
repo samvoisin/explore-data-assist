@@ -78,23 +78,51 @@ exec_globals = {
 ## Testing Approach
 
 ### Test Structure
-- Main test file: `test_assistant.py`
+- Uses `pytest` framework for structured testing
+- Tests organized in `tests/` directory with separate files per component:
+  - `tests/test_data_analyzer.py` - Tests for DataAnalyzer functionality
+  - `tests/test_assistant.py` - Tests for DataVisualizationAssistant functionality
+  - `tests/test_llm_interface.py` - Tests for LLMInterface functionality
 - Tests verify functionality without requiring OpenAI API keys
 - Includes both unit tests for individual components and integration tests
 - Demo scripts (`demo.py`, `full_demo.py`) simulate complete workflows
+- `tests/conftest.py` provides shared fixtures and pytest configuration
+
+### Running Tests
+```bash
+# Run all tests
+pytest tests/
+
+# Run specific test file
+pytest tests/test_data_analyzer.py
+
+# Run tests with verbose output
+pytest tests/ -v
+```
 
 ### Testing Patterns
 ```python
-# Create sample DataFrames for testing
-df = pd.DataFrame({
-    'column1': ['value1', 'value2'],
-    'column2': [1, 2]
-})
+# Fixtures provide sample DataFrames for testing
+@pytest.fixture
+def sample_dataframe():
+    return pd.DataFrame({
+        'column1': ['value1', 'value2'],
+        'column2': [1, 2]
+    })
 
-# Test data analysis capabilities
-analyzer = DataAnalyzer(df)
-metadata = analyzer.get_metadata()
+# Test classes organize related test methods
+class TestDataAnalyzer:
+    def test_get_metadata_basic(self, sample_dataframe):
+        analyzer = DataAnalyzer(sample_dataframe)
+        metadata = analyzer.get_metadata()
+        assert metadata['shape'] == (2, 2)
 ```
+
+### Test Categories
+- **Unit Tests**: Test individual component methods and functionality
+- **Integration Tests**: Test component interactions and data flow
+- **Mock Tests**: Use mock API keys and restricted execution for safety
+- **File-based Tests**: Test loading different data formats with temporary files
 
 ## LLM Integration Guidelines
 
@@ -137,12 +165,16 @@ explore-data-assist/
 │   ├── assistant.py         # Main coordinator
 │   ├── data_analyzer.py     # Metadata extraction
 │   └── llm_interface.py     # LLM integration
+├── tests/                   # Test suite using pytest
+│   ├── conftest.py         # Pytest configuration and fixtures
+│   ├── test_data_analyzer.py    # Tests for DataAnalyzer
+│   ├── test_assistant.py        # Tests for DataVisualizationAssistant
+│   └── test_llm_interface.py    # Tests for LLMInterface
 ├── sample_data/             # Example datasets
 ├── main.py                  # CLI entry point
 ├── demo.py                  # Basic demo without API
 ├── full_demo.py             # Complete workflow demo
-├── test_assistant.py        # Test suite
-└── requirements.txt         # Dependencies
+└── requirements.txt         # Dependencies (includes pytest)
 ```
 
 ## Environment Configuration
