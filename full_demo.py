@@ -6,20 +6,26 @@ This simulates the complete workflow including LLM code generation.
 
 import os
 import sys
-import pandas as pd
+from pathlib import Path
+
 import matplotlib.pyplot as plt
+import pandas as pd
 
 # Add src to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from data_analyzer import DataAnalyzer
+from src.data_analyzer import DataAnalyzer
+
+DEFAULT_PLOT_DIR = Path(
+    "./saved-plots"
+).resolve()  # assumes this script is run from repo root
 
 
 def simulate_llm_response(request: str, context: str) -> str:
     """Simulate LLM response for different visualization requests."""
-    
+
     request_lower = request.lower()
-    
+
     if "bar chart" in request_lower and "product" in request_lower:
         return """
 import matplotlib.pyplot as plt
@@ -33,7 +39,7 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
 """
-    
+
     elif "line chart" in request_lower and "time" in request_lower:
         return """
 import matplotlib.pyplot as plt
@@ -49,7 +55,7 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
 """
-    
+
     elif "pie chart" in request_lower and "region" in request_lower:
         return """
 import matplotlib.pyplot as plt
@@ -59,7 +65,7 @@ plt.pie(region_sales.values, labels=region_sales.index, autopct='%1.1f%%')
 plt.title('Sales Distribution by Region')
 plt.show()
 """
-    
+
     elif "scatter" in request_lower:
         return """
 import matplotlib.pyplot as plt
@@ -71,7 +77,7 @@ plt.ylabel('Revenue')
 plt.tight_layout()
 plt.show()
 """
-    
+
     else:
         return """
 import matplotlib.pyplot as plt
@@ -85,24 +91,25 @@ plt.show()
 """
 
 
-def execute_visualization_code(code: str, df: pd.DataFrame, save_plot: bool = True) -> None:
+def execute_visualization_code(
+    code: str, df: pd.DataFrame, save_plot: bool = False
+) -> None:
     """Execute visualization code and optionally save the plot."""
-    
+
     # Prepare execution environment
-    exec_globals = {
-        'df': df,
-        'plt': plt,
-        'pd': pd
-    }
-    
+    exec_globals = {"df": df, "plt": plt, "pd": pd}
+
     # Modify the code to save instead of show if requested
     if save_plot:
-        code = code.replace('plt.show()', 'plt.savefig("/tmp/demo_plot.png", dpi=150, bbox_inches="tight")\nplt.close()')
-    
+        code = code.replace(
+            "plt.show()",
+            f'plt.savefig("{DEFAULT_PLOT_DIR}/demo_plot.png", dpi=150, bbox_inches="tight")\nplt.close()',
+        )
+
     try:
         exec(code.strip(), exec_globals)
         if save_plot:
-            print("   ✓ Visualization saved to /tmp/demo_plot.png")
+            print(f"   ✓ Visualization saved to {DEFAULT_PLOT_DIR}/demo_plot.png")
         else:
             print("   ✓ Visualization displayed")
     except Exception as e:
@@ -115,48 +122,48 @@ def full_demo():
     print("Data Visualization Assistant - Full Workflow Demo")
     print("=" * 70)
     print()
-    
+
     # Load dataset
     print("Step 1: Loading sales dataset...")
-    df = pd.read_csv('sample_data/sales_data.csv')
+    df = pd.read_csv("sample_data/sales_data.csv")
     print(f"   ✓ Loaded {df.shape[0]} rows, {df.shape[1]} columns")
     print(f"   ✓ Columns: {', '.join(df.columns)}")
     print()
-    
+
     # Analyze dataset
     print("Step 2: Analyzing dataset structure...")
     analyzer = DataAnalyzer(df)
     context = analyzer.format_for_llm()
     print("   ✓ Dataset metadata extracted for LLM context")
     print()
-    
+
     # Demonstrate multiple visualization requests
     requests = [
         "Show me a bar chart of total sales by product",
-        "Create a line chart of sales over time", 
+        "Create a line chart of sales over time",
         "Make a pie chart of sales distribution by region",
-        "Display a scatter plot of sales vs revenue"
+        "Display a scatter plot of sales vs revenue",
     ]
-    
+
     for i, request in enumerate(requests, 3):
         print(f"Step {i}: Processing request: '{request}'")
-        
+
         # Simulate LLM code generation
         print("   • Sending context and request to OpenAI LLM...")
         generated_code = simulate_llm_response(request, context)
         print("   • Code generated successfully!")
-        
+
         # Show the generated code
         print("   • Generated matplotlib code:")
-        for line in generated_code.strip().split('\n'):
+        for line in generated_code.strip().split("\n"):
             if line.strip():
                 print(f"     {line}")
-        
+
         # Execute the code
         print("   • Executing visualization code...")
-        execute_visualization_code(generated_code, df, save_plot=True)
+        execute_visualization_code(generated_code, df)
         print()
-    
+
     print("=" * 70)
     print("Demo completed successfully!")
     print()

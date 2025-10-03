@@ -6,12 +6,13 @@ This demonstrates the application flow without requiring an OpenAI API key.
 
 import os
 import sys
+
 import pandas as pd
 
 # Add src to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from data_analyzer import DataAnalyzer
+from src.data_analyzer import DataAnalyzer
 
 
 def demo_data_analysis():
@@ -20,23 +21,23 @@ def demo_data_analysis():
     print("Data Visualization Assistant - Demo")
     print("=" * 60)
     print()
-    
+
     # Load the sample dataset
     print("1. Loading sample sales dataset...")
-    df = pd.read_csv('sample_data/sales_data.csv')
+    df = pd.read_csv("sample_data/sales_data.csv")
     print(f"   ✓ Dataset loaded: {df.shape[0]} rows, {df.shape[1]} columns")
     print()
-    
+
     # Analyze the dataset
     print("2. Analyzing dataset structure...")
     analyzer = DataAnalyzer(df)
     metadata = analyzer.get_metadata()
-    
+
     print(f"   ✓ Columns: {', '.join(metadata['columns'])}")
     print(f"   ✓ Numerical columns: {', '.join(metadata['numerical_columns'])}")
     print(f"   ✓ Categorical columns: {', '.join(metadata['categorical_columns'])}")
     print()
-    
+
     # Show dataset info formatted for LLM
     print("3. Dataset context that would be sent to OpenAI LLM:")
     print("-" * 50)
@@ -44,16 +45,16 @@ def demo_data_analysis():
     print(context)
     print("-" * 50)
     print()
-    
+
     # Show sample visualization requests
     print("4. Example visualization requests you could make:")
     print("   • 'Show me a bar chart of total sales by product'")
-    print("   • 'Create a line chart of sales over time'") 
+    print("   • 'Create a line chart of sales over time'")
     print("   • 'Make a pie chart of sales distribution by region'")
     print("   • 'Display a scatter plot of sales vs revenue'")
     print("   • 'Show me a histogram of revenue values'")
     print()
-    
+
     # Show what the generated code might look like
     print("5. Example generated matplotlib code:")
     print("   For request: 'Show me a bar chart of total sales by product'")
@@ -72,7 +73,7 @@ def demo_data_analysis():
     print("   plt.show()")
     print("   ```")
     print()
-    
+
     print("=" * 60)
     print("To use with real OpenAI integration:")
     print("1. Get an OpenAI API key from https://platform.openai.com/")
