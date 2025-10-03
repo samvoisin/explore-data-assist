@@ -23,7 +23,8 @@ class DataAnalyzer:
             'numerical_columns': self._get_numerical_columns(),
             'categorical_columns': self._get_categorical_columns(),
             'index_info': self._get_index_info(),
-            'statistics': self._get_basic_statistics()
+            'statistics': self._get_basic_statistics(),
+            'categorical_statistics': self._get_categorical_statistics()
         }
         return metadata
     
@@ -63,6 +64,19 @@ class DataAnalyzer:
             }
         return numerical_stats
     
+    def _get_categorical_statistics(self) -> Dict[str, Any]:
+        """Get basic statistical information for categorical columns."""
+        categorical_stats = {}
+        for col in self._get_categorical_columns():
+            unique_values = self.df[col].value_counts()
+            categorical_stats[col] = {
+                'unique_count': int(self.df[col].nunique()),
+                'most_frequent': str(unique_values.index[0]) if len(unique_values) > 0 else None,
+                'most_frequent_count': int(unique_values.iloc[0]) if len(unique_values) > 0 else None,
+                'unique_values': unique_values.head(10).to_dict()  # Top 10 most frequent values
+            }
+        return categorical_stats
+    
     def format_for_llm(self) -> str:
         """Format the metadata as a string for LLM context."""
         metadata = self.get_metadata()
@@ -82,5 +96,8 @@ Sample Data (first 5 rows):
 
 Basic Statistics for Numerical Columns:
 {chr(10).join([f"- {col}: mean={stats.get('mean', 'N/A')}, min={stats.get('min', 'N/A')}, max={stats.get('max', 'N/A')}" for col, stats in metadata['statistics'].items()])}
+
+Basic Statistics for Categorical Columns:
+{chr(10).join([f"- {col}: unique_count={stats.get('unique_count', 'N/A')}, most_frequent='{stats.get('most_frequent', 'N/A')}' (appears {stats.get('most_frequent_count', 'N/A')} times)" for col, stats in metadata['categorical_statistics'].items()])}
 """
         return context
