@@ -34,8 +34,22 @@ def test_data_analyzer():
     print(f"Numerical columns: {metadata['numerical_columns']}")
     print(f"Categorical columns: {metadata['categorical_columns']}")
     
+    # Test categorical statistics functionality
+    cat_stats = metadata['categorical_statistics']
+    assert 'name' in cat_stats, "Name column should be in categorical statistics"
+    assert 'department' in cat_stats, "Department column should be in categorical statistics"
+    assert cat_stats['name']['unique_count'] == 4, f"Name should have 4 unique values, got {cat_stats['name']['unique_count']}"
+    assert cat_stats['department']['unique_count'] == 3, f"Department should have 3 unique values, got {cat_stats['department']['unique_count']}"
+    assert cat_stats['department']['most_frequent'] == 'HR', f"Most frequent department should be HR, got {cat_stats['department']['most_frequent']}"
+    assert cat_stats['department']['most_frequent_count'] == 2, f"HR should appear 2 times, got {cat_stats['department']['most_frequent_count']}"
+    
     print("\nFormatted for LLM:")
     print(analyzer.format_for_llm())
+    
+    # Verify categorical statistics are included in the formatted output
+    formatted_output = analyzer.format_for_llm()
+    assert "Basic Statistics for Categorical Columns:" in formatted_output, "Categorical statistics section should be present"
+    assert "unique_count=" in formatted_output, "Unique count should be displayed for categorical columns"
     
     print("DataAnalyzer test passed!\n")
 
