@@ -83,3 +83,15 @@ class TestDataVisualizationAssistant:
         assert assistant.current_df is not None
         assert assistant.current_df.shape == (3, 3)
         assert list(assistant.current_df.columns) == ['date', 'sales', 'product']
+    
+    def test_voice_integration_no_dataset(self, mock_openai_key):
+        """Test that voice input requires a dataset to be loaded first."""
+        assistant = DataVisualizationAssistant()
+        
+        # Mock the transcription to avoid actual API call
+        assistant.llm.transcribe_audio_file = lambda x: "create a bar chart"
+        
+        # Since no dataset is loaded, create_visualization should raise an exception
+        # We can't easily test the interactive session, but we can test the underlying method
+        with pytest.raises(Exception, match="No dataset loaded"):
+            assistant.create_visualization("create a bar chart")

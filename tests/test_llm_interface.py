@@ -85,3 +85,37 @@ plt.close()
         code = interface.generate_visualization_code(context, request)
         assert isinstance(code, str)
         assert len(code) > 0
+    
+    def test_transcribe_audio_file_missing_file(self, mock_openai_key):
+        """Test transcribe_audio_file with missing file."""
+        interface = LLMInterface()
+        
+        # Test with non-existent file
+        with pytest.raises(Exception, match="Failed to transcribe audio"):
+            interface.transcribe_audio_file("nonexistent_file.wav")
+    
+    def test_record_and_transcribe_voice_no_audio_libraries(self, mock_openai_key, monkeypatch):
+        """Test record_and_transcribe_voice when audio libraries are not available."""
+        interface = LLMInterface()
+        
+        # Mock import failure for sounddevice
+        def mock_import_error(*args, **kwargs):
+            raise ImportError("No module named 'sounddevice'")
+        
+        monkeypatch.setattr('builtins.__import__', mock_import_error)
+        
+        with pytest.raises(Exception, match="Audio libraries not available"):
+            interface.record_and_transcribe_voice()
+    
+    @pytest.mark.skip(reason="Requires actual OpenAI API key and audio file")
+    def test_transcribe_audio_file_real_api(self):
+        """Test audio transcription with real OpenAI API (skipped by default)."""
+        import os
+        if not os.getenv('OPENAI_API_KEY') or os.getenv('OPENAI_API_KEY') == 'test-key':
+            pytest.skip("Real OpenAI API key required")
+            
+        # This would require an actual audio file to test
+        # interface = LLMInterface()
+        # transcription = interface.transcribe_audio_file("test_audio.wav")
+        # assert isinstance(transcription, str)
+        pytest.skip("Requires actual audio file for testing")
