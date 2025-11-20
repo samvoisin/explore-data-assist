@@ -14,11 +14,9 @@ import pandas as pd
 # Add src to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-from src.data_analyzer import DataAnalyzer
+from edagent.data_analyzer import DataAnalyzer
 
-DEFAULT_PLOT_DIR = Path(
-    "./saved-plots"
-).resolve()  # assumes this script is run from repo root
+DEFAULT_PLOT_DIR = Path("./saved-plots").resolve()  # assumes this script is run from repo root
 
 
 def simulate_llm_response(request: str, context: str) -> str:
@@ -91,9 +89,7 @@ plt.show()
 """
 
 
-def execute_visualization_code(
-    code: str, df: pd.DataFrame, save_plot: bool = False
-) -> None:
+def execute_visualization_code(code: str, df: pd.DataFrame, save_plot: bool = False) -> None:
     """Execute visualization code and optionally save the plot."""
 
     # Prepare execution environment
