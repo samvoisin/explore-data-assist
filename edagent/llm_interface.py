@@ -19,12 +19,13 @@ class LLMInterface:
     def __init__(self, api_key: Optional[str] = None):
         self.client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
 
-    def generate_visualization_code(
-        self, dataset_context: str, user_request: str
-    ) -> str:
+    def generate_visualization_code(self, dataset_context: str, user_request: str) -> str:
         """Generate matplotlib code for the requested visualization."""
 
-        system_prompt = """You are a data visualization expert. Your task is to generate Python code using matplotlib to create visualizations based on user requests and dataset information.
+        system_prompt = """
+        You are a data visualization expert.
+        Your task is to generate Python code using matplotlib to create visualizations based on user requests and
+        dataset information.
 
 Guidelines:
 1. Always use the variable 'df' to refer to the pandas DataFrame

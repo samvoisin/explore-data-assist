@@ -6,8 +6,8 @@ from typing import Optional
 
 import pandas as pd
 
-from src.data_analyzer import DataAnalyzer
-from src.llm_interface import LLMInterface
+from edagent.data_analyzer import DataAnalyzer
+from edagent.llm_interface import LLMInterface
 
 
 class DataVisualizationAssistant:
@@ -80,9 +80,7 @@ class DataVisualizationAssistant:
         print("  load <file_path> - Load a dataset")
         print("  info - Show dataset information")
         print("  viz <request> - Create a visualization")
-        print(
-            "  voice [duration] - Record voice input for visualization (default: 5 seconds)"
-        )
+        print("  voice [duration] - Record voice input for visualization (default: 5 seconds)")
         print("  quit - Exit the assistant")
         print()
 
@@ -134,9 +132,7 @@ class DataVisualizationAssistant:
 
                         if transcription.strip():
                             self.create_visualization(transcription)
-                            print(
-                                "Visualization created successfully from voice input!"
-                            )
+                            print("Visualization created successfully from voice input!")
                         else:
                             print("No speech detected. Please try again.")
                     except Exception as e:
