@@ -4,7 +4,7 @@ Tests for the LLMInterface component.
 
 import pytest
 
-from llm_interface import LLMInterface
+from edagent.llm_interface import LLMInterface
 
 
 class TestLLMInterface:
@@ -35,9 +35,7 @@ plt.close()
         # Should not raise an exception
         interface.execute_visualization(code, sample_dataframe)
 
-    def test_execute_visualization_with_dataframe(
-        self, sample_dataframe, mock_openai_key
-    ):
+    def test_execute_visualization_with_dataframe(self, sample_dataframe, mock_openai_key):
         """Test visualization code execution that uses the DataFrame."""
         interface = LLMInterface()
 
@@ -52,9 +50,7 @@ plt.close()
         # Should not raise an exception
         interface.execute_visualization(code, sample_dataframe)
 
-    def test_execute_visualization_invalid_code(
-        self, sample_dataframe, mock_openai_key
-    ):
+    def test_execute_visualization_invalid_code(self, sample_dataframe, mock_openai_key):
         """Test visualization code execution with invalid code."""
         interface = LLMInterface()
 
@@ -64,9 +60,7 @@ plt.close()
         with pytest.raises(Exception, match="Failed to execute visualization code"):
             interface.execute_visualization(code, sample_dataframe)
 
-    def test_execute_visualization_restricted_access(
-        self, sample_dataframe, mock_openai_key
-    ):
+    def test_execute_visualization_restricted_access(self, sample_dataframe, mock_openai_key):
         """Test that restricted operations are blocked in code execution."""
         interface = LLMInterface()
 
