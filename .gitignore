@@ -1,3 +1,5 @@
+.cspell/
+
 # Environment variables
 .env
 

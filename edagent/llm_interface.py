@@ -3,10 +3,13 @@ Module for interfacing with OpenAI LLMs to generate data visualization code.
 """
 
 import os
+import tempfile
 from typing import Optional
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import scipy.io.wavfile
+import sounddevice as sd
 from openai import OpenAI
 
 
@@ -16,12 +19,13 @@ class LLMInterface:
     def __init__(self, api_key: Optional[str] = None):
         self.client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
 
-    def generate_visualization_code(
-        self, dataset_context: str, user_request: str
-    ) -> str:
+    def generate_visualization_code(self, dataset_context: str, user_request: str) -> str:
         """Generate matplotlib code for the requested visualization."""
 
-        system_prompt = """You are a data visualization expert. Your task is to generate Python code using matplotlib to create visualizations based on user requests and dataset information.
+        system_prompt = """
+        You are a data visualization expert.
+        Your task is to generate Python code using matplotlib to create visualizations based on user requests and
+        dataset information.
 
 Guidelines:
 1. Always use the variable 'df' to refer to the pandas DataFrame
@@ -98,3 +102,45 @@ Please generate matplotlib code to create this visualization."""
             exec(code, exec_globals)
         except Exception as e:
             raise Exception(f"Failed to execute visualization code: {str(e)}")
+
+    def transcribe_audio_file(self, audio_file_path: str) -> str:
+        """Transcribe audio file using OpenAI speech-to-text API."""
+        try:
+            with open(audio_file_path, "rb") as audio_file:
+                transcript = self.client.audio.transcriptions.create(
+                    model="whisper-1", file=audio_file, response_format="text"
+                )
+            return transcript.strip()
+        except Exception as e:
+            raise Exception(f"Failed to transcribe audio: {str(e)}")
+
+    def record_and_transcribe_voice(self, duration: int = 5) -> str:
+        """Record voice input and transcribe it using OpenAI speech-to-text API.
+
+        Args:
+            duration: Recording duration in seconds (default: 5)
+
+        Returns:
+            Transcribed text from the audio
+        """
+        # Record audio to temporary file
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
+            sample_rate = 44100  # Standard sample rate
+            print(f"Recording for {duration} seconds... Speak now!")
+
+            # Record audio
+            audio_data = sd.rec(
+                int(duration * sample_rate),
+                samplerate=sample_rate,
+                channels=1,
+                dtype="int16",
+            )
+            sd.wait()  # Wait for recording to complete
+            print("Recording complete!")
+
+            # Save to temporary file
+            scipy.io.wavfile.write(temp_audio.name, sample_rate, audio_data)
+
+            # Transcribe the audio file
+            transcription = self.transcribe_audio_file(temp_audio.name)
+            return transcription
