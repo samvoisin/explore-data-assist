@@ -73,16 +73,20 @@ class DataVisualizationAssistant:
 
         return code
 
-    def interactive_session(self) -> None:
-        """Start an interactive session with the assistant."""
-        print("Welcome to the Data Visualization Assistant!")
+    def help(self):
+        """Display help information."""
         print("Commands:")
         print("  load <file_path> - Load a dataset")
         print("  info - Show dataset information")
         print("  viz <request> - Create a visualization")
         print("  voice [duration] - Record voice input for visualization (default: 5 seconds)")
-        print("  quit - Exit the assistant")
+        print("  quit/exit - Exit the assistant")
         print()
+
+    def interactive_session(self) -> None:
+        """Start an interactive session with the assistant."""
+        print("Welcome to the Data Visualization Assistant!")
+        self.help()
 
         while True:
             try:
@@ -91,9 +95,12 @@ class DataVisualizationAssistant:
                 if not user_input:
                     continue
 
-                if user_input.lower() == "quit":
+                if user_input.lower() == "quit" or user_input.lower() == "exit":
                     print("Goodbye!")
                     break
+
+                elif user_input.lower() == "help":
+                    self.help()
 
                 elif user_input.lower() == "info":
                     print(self.get_dataset_info())
