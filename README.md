@@ -97,6 +97,44 @@ Once in the interactive session, use these commands:
 - `voice [duration]` - Record voice input for visualization (default: 5 seconds)
 - `quit` or `exit` - Exit the assistant
 
+### Using Voice Input
+
+The `voice` command allows you to speak your visualization requests instead of typing them. This feature uses OpenAI's Whisper model to transcribe your speech into text, which is then processed just like a typed `viz` command.
+
+**Basic Usage:**
+```
+Assistant> voice
+Recording for 5 seconds... Speak now!
+Recording complete. Transcribing...
+Transcribed: "show me a bar chart of sales by region"
+[Generates and executes visualization]
+```
+
+**Custom Duration:**
+```
+Assistant> voice 10
+Recording for 10 seconds... Speak now!
+[Records for 10 seconds]
+```
+
+**Tips for Voice Input:**
+- Speak clearly and at a normal pace
+- Use specific visualization terminology (e.g., "bar chart", "scatter plot", "line graph")
+- Mention column names from your dataset
+- Keep requests concise (under 30 seconds)
+- Wait for the "Speak now!" prompt before speaking
+
+**Example Voice Commands:**
+- "Create a bar chart showing total sales by product"
+- "Make a scatter plot of age versus salary"
+- "Show me a pie chart of the distribution by category"
+- "Display a line graph of revenue over time"
+
+**Requirements:**
+- A working microphone
+- OpenAI API key (for Whisper transcription)
+- The `sounddevice` and `scipy` packages (installed automatically)
+
 ## Sample Visualization Requests
 
 Try these natural language requests with the sample data in interactive mode:
