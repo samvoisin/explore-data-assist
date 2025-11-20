@@ -8,6 +8,7 @@ A digital assistant for exploratory data analysis
 ## Features
 
 - **Natural Language Interface**: Describe visualizations in plain English
+- **Voice Interface**: Use spoken natural language for developing visualization
 - **Automatic Dataset Analysis**: Extracts metadata about columns, data types, and statistics
 - **Smart Code Generation**: Uses OpenAI GPT models to generate appropriate matplotlib code
 - **Multiple File Format Support**: CSV, Excel, JSON, Parquet files
@@ -55,64 +56,58 @@ pip install -e .
 
 ## Usage
 
-### Running the Assistant
+### Command-Line Interface
 
-Start the interactive assistant:
+After installation, start an interactive session with `edagent`:
+
 ```bash
-python main.py
+# Start interactive session
+edagent
+
+# Or load a dataset immediately
+edagent sample_data/sales_data.csv
+
+# With custom API key
+edagent --api-key your-key-here sample_data/sales_data.csv
 ```
 
-Or, if installed as a package:
+### API Key Configuration
+
+Configure your OpenAI API key using any of these methods:
+
 ```bash
-python -m edagent
+# Via .env file (recommended):
+cp .env.example .env
+# Edit .env and add: OPENAI_API_KEY=your-key-here
+
+# Via environment variable:
+export OPENAI_API_KEY=your-key-here
+
+# Via command-line option:
+edagent --api-key your-key-here
 ```
 
-### Commands
+### Interactive Commands
+
+Once in the interactive session, use these commands:
 
 - `load <file_path>` - Load a dataset from file
-- `info` - Show information about the loaded dataset
-- `viz <description>` - Create a visualization based on natural language description
-- `quit` - Exit the assistant
-
-### Example Session
-
-```
-Welcome to the Data Visualization Assistant!
-
-Assistant> load sample_data/sales_data.csv
-Dataset loaded successfully! Shape: (21, 5)
-
-Assistant> info
-Dataset Information:
-- Shape: 21 rows, 5 columns
-- Columns: date, product, sales, region, revenue
-...
-
-Assistant> viz show me a bar chart of total sales by product
-Generating visualization code...
-Generated code:
-import matplotlib.pyplot as plt
-df_grouped = df.groupby('product')['sales'].sum()
-plt.figure(figsize=(10, 6))
-plt.bar(df_grouped.index, df_grouped.values)
-plt.title('Total Sales by Product')
-plt.xlabel('Product')
-plt.ylabel('Total Sales')
-plt.show()
-
-Executing visualization...
-Visualization created successfully!
-```
+- `info` - Show detailed information about the loaded dataset
+- `viz <description>` - Create a visualization from natural language description
+- `voice [duration]` - Record voice input for visualization (default: 5 seconds)
+- `quit` or `exit` - Exit the assistant
 
 ## Sample Visualization Requests
 
-Try these natural language requests with the sample data:
+Try these natural language requests with the sample data in interactive mode:
 
-- "Show me a line chart of sales over time"
-- "Create a scatter plot of sales vs revenue"
-- "Make a pie chart showing sales distribution by region"
-- "Display a histogram of revenue values"
-- "Show me a bar chart comparing average sales by product"
+```
+Assistant> viz Show me a line chart of sales over time
+Assistant> viz Create a scatter plot of sales vs revenue
+Assistant> viz Make a pie chart showing sales distribution by region
+Assistant> viz Display a histogram of revenue values
+Assistant> viz Show me a bar chart comparing average sales by product
+```
 
 ## Testing
 
@@ -179,7 +174,9 @@ explore-data-assist/
 │   ├── __init__.py
 │   ├── assistant.py        # Main assistant coordination
 │   ├── data_analyzer.py    # Dataset metadata extraction
-│   └── llm_interface.py    # OpenAI LLM integration
+│   ├── llm_interface.py    # OpenAI LLM integration
+│   └── _cli/               # Command-line interface
+│       └── __init__.py     # CLI commands and entry point
 ├── tests/                  # Test suite
 │   ├── __init__.py
 │   ├── conftest.py         # Pytest fixtures and configuration
@@ -190,7 +187,6 @@ explore-data-assist/
 │   ├── sales_data.csv
 │   └── malvern_modeling_dataset.csv
 ├── saved-plots/            # Directory for saved visualizations
-├── main.py                 # CLI entry point
 ├── demo.py                 # Basic demo script
 ├── full_demo.py            # Complete workflow demo
 ├── pyproject.toml          # Project configuration and dependencies
@@ -206,6 +202,7 @@ explore-data-assist/
 - **matplotlib** (>=3.5.0) - Visualization generation
 - **openai** (>=1.0.0) - LLM integration
 - **python-dotenv** (>=0.19.0) - Environment variable management
+- **click** (>=8.3.1) - Command-line interface framework
 - **sounddevice** (>=0.4.6) - Audio recording for voice input
 - **scipy** (>=1.9.0) - Scientific computing utilities
 
@@ -214,11 +211,6 @@ explore-data-assist/
 - **pytest-cov** (>=6.1.1) - Coverage reporting
 - **ruff** (>=0.11.12) - Linting and formatting
 - **pre-commit** (>=4.2.0) - Git hooks for code quality
-
-## Future Enhancements
-
-- **Whisper Integration**: Voice input using OpenAI's Whisper model
-- **Web Interface**: Browser-based UI for better user experience
 
 ## Contributing
 

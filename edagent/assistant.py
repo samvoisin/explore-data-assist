@@ -80,7 +80,7 @@ class DataVisualizationAssistant:
         print("  info - Show dataset information")
         print("  viz <request> - Create a visualization")
         print("  voice [duration] - Record voice input for visualization (default: 5 seconds)")
-        print("  quit - Exit the assistant")
+        print("  quit/exit - Exit the assistant")
         print()
 
     def interactive_session(self) -> None:
@@ -95,7 +95,7 @@ class DataVisualizationAssistant:
                 if not user_input:
                     continue
 
-                if user_input.lower() == "quit":
+                if user_input.lower() == "quit" or user_input.lower() == "exit":
                     print("Goodbye!")
                     break
 
