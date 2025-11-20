@@ -22,7 +22,7 @@ format:  # format all source code
 	@uvx ruff check --fix --config=pyproject.toml
 
 test:  # run all tests in project
-	@.venv/bin/pytest -vv tests/ --cov=load_fcast --cov-report term-missing:skip-covered --cov-fail-under=80
+	@.venv/bin/pytest -vv tests/ --cov=edagent --cov-report term-missing:skip-covered --cov-fail-under=80
 
 clean:  # remove development files
 	rm -rf .venv/
